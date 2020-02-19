@@ -5,11 +5,11 @@ import { RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TestsqliteComponent } from './testsqlite.component';
+import { TeststoreComponent } from './teststore.component';
 
 @NgModule({
   imports: [ CommonModule, FormsModule, IonicModule, RouterModule],
-  declarations: [TestsqliteComponent],
-  exports: [TestsqliteComponent]
+  declarations: [TeststoreComponent],
+  exports: [TeststoreComponent]
 })
-export class TestsqliteComponentModule {}
+export class TeststoreComponentModule {}

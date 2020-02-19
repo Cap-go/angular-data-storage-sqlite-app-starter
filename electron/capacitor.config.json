@@ -1,6 +1,6 @@
 {
-  "appId": "com.jeep.app.ionic.angular",
-  "appName": "angular-sqlite-app-starter",
+  "appId": "com.jeep.app.ionic.angular.datastoragesqlite",
+  "appName": "angular-data-storage-sqlite-app-starter",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

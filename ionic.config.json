@@ -1,5 +1,5 @@
 {
-  "name": "angular-sqlite-app-starter",
+  "name": "angular-data-storage-sqlite-app-starter",
   "integrations": {
     "capacitor": {}
   },

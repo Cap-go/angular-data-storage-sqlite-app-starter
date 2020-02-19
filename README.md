@@ -1,19 +1,19 @@
-# Ionic/Angular SQLite App Starter
+# Ionic/Angular Data Storage SQLite App Starter
 
-Ionic/Angular application demonstrating the use of the ```capacitor-sqlite``` plugin part of the @jeepq/capacitor plugin library and can be use as an Ionic/Angular application starter.
+Ionic/Angular application demonstrating the use of the ```capacitor-data-storage-sqlite``` plugin part of the @jeepq/capacitor plugin library and can be use as an Ionic/Angular application starter.
 
 
-The ```capacitor-sqlite``` test is accessible in the Tab2 of the Application by clicking on the SQLite test button.
+The ```capacitor-data-storage-sqlite``` test is accessible in the Tab2 of the Application by clicking on the SQLite test button.
 
-The application uses a service class as a wrapper to the ```capacitor-sqlite``` plugin 
+The application uses a service class as a wrapper to the ```capacitor-data-storage-sqlite``` plugin 
 
 ## Getting Started
 
 To start building your App using this Starter App, clone this repo to a new directory:
 
 ```bash
-git clone https://github.com/jepiqueau/angular-sqlite-app-starter.git 
-cd angular-sqlite-app-starter
+git clone https://github.com/jepiqueau/angular-data-storage-sqlite-app-starter.git 
+cd angular-data-storage-sqlite-app-starter
 git remote rm origin
 ```
 
@@ -36,22 +36,16 @@ npx cap copy web
 the capacitor config parameters are:
 
 ```
-"appId": "com.example.app.capacitor"
-"appName": "angular-sqlite-app-starter"
+"appId": "com.example.app.capacitor.datastoragesqlite"
+"appName": "angular-data-storage-sqlite-app-starter"
 ```
 
 ### Building Web Code
 
-The ```capacitor-sqlite``` is not implemented for Web Browsers.
-if you run
-
 ```bash
 npx cap serve
 ```
-you will get the following messages:
-```
-SQLite Plugin not available for Web Platform
-```
+
 
 ### Building Native Project
 
@@ -69,36 +63,22 @@ npx cap open android
 ```
 Once Android Studio launches, you can build your app through the standard Android Studio workflow.
 
+#### Electron
+
+```bash
+npx cap open electron
+```
+
 #### Resulting Output
 
 ```
-Open Database successful
-Execute Creation Tables successful
-Execute Insert Users successful
-Execute Insert Messages successful
-Query Two Users successful
-Query Two Messages successful
-Create One User with sqlcmd and values successful
-Create One User with sqlcmd successful
-Query Four Users successful
-Query Users age > 30 successful
-Closing the database was successful
-The test database was successful
-The test to encrypt the database was successful
-The test encrypted database was successful
-The test wrong password was successful
-The test new password was successful
-The test new password database was successful
-The set of tests was successful
+The DataStore test was successful
 ```
 
-At the end of the test, two databases should have been created and both are encrypted, 
- - for the first one the secret is ```sqlite secret```
- - for the second one the secret is ```sqlite new secret```
+At the end of the test, one un-encrypted store should have been created
 
 ```
-test-sqliteSQLite.db
-test-encryptedSQLite.db
+storageSQLite.db
 ```
 
 ### Changing the 'secret' and 'new secret'
@@ -106,32 +86,31 @@ test-encryptedSQLite.db
 #### IOS
 
 In Xcode, before building your app, 
- - Go to the ```Pods/Development Pods/JeepqCapacitor/DatabaseSQLite``` folder, 
- - Modify the ```secret``` and ```newsecret```strings in the GlobalSQLite.swift file.
+ - Go to the ```Pods/Development Pods/JeepqCapacitor/DataStorageSQLite``` folder, 
+ - Modify the ```secret``` and ```newsecret```strings in the Global.swift file.
 
 #### Android
 
 In Android Studio, before building your app,
  - Go to the ```jeepq-capacitor/java/com.jeep.plugins.capacitor/cdssUtils```folder,
- - Modify the ```secret``` and ```newsecret```strings in the GlobalSQLite.java file.
+ - Modify the ```secret``` and ```newsecret```strings in the Global.java file.
 
 ### Angular Service
 
-A Angular Service has been defined as a wrapper to the ```capacitor-sqlite``` plugin.
+A Angular Service has been defined as a wrapper to the ```capacitor-data-storage-sqlite``` plugin.
 
 ```tsx
 import { Injectable } from '@angular/core';
-import { Observable, from } from 'rxjs';
 
 import { Plugins } from '@capacitor/core';
 import * as PluginsLibrary from '@jeepq/capacitor';
-const { CapacitorSQLite, Device } = Plugins;
+const { CapacitorDataStorageSqlite, Device } = Plugins;
 
 @Injectable({
   providedIn: 'root'
 })
-export class SQLiteService {
-  sqlite: any;
+export class StoreService {
+  store: any;
   isService: boolean = false;
   platform: string;
   constructor() {
@@ -139,102 +118,132 @@ export class SQLiteService {
   /**
    * Plugin Initialization
    */
-  async initializePlugin(): Promise<void> {
+  async init(): Promise<void> {
     const info = await Device.getInfo();
     this.platform = info.platform;
     if (this.platform === "ios" || this.platform === "android") {
-      this.sqlite = CapacitorSQLite;
-      this.isService = true;
+      this.store = CapacitorDataStorageSqlite;
     } else {
-      this.sqlite = PluginsLibrary.CapacitorSQLite;
+      this.store = PluginsLibrary.CapacitorDataStorageSqlite;
     }
-  }
-  /**
-   * Get Echo 
-   * @param value string 
-   */
-  getEcho(value:string): Observable<any> {
-    if (this.isService) {
-      return from( this.sqlite.echo({value:"Hello from JEEP"}));
-    } else {
-      return from(Promise.resolve(""));
-    }
+    this.isService = true;
   }
   /**
    * Open a Database
-   * @param dbName string
+   * @param _dbName string optional
+   * @param _table string optional
    * @param _encrypted boolean optional 
    * @param _mode string optional
    */  
-  openDB(dbName:string,_encrypted?:boolean,_mode?:string): Observable<any> {
+  async openStore(_dbName?:string,_table?:string,_encrypted?:boolean,_mode?:string): Promise<boolean> {
     if(this.isService) {
+      const database: string = _dbName ? _dbName : "storage";
+      const table: string = _table ? _table : "storage_table";
       const encrypted:boolean = _encrypted ? _encrypted : false;
       const mode: string = _mode ? _mode : "no-encryption";
-      return from( this.sqlite.open({database:dbName,encrypted:encrypted,mode:mode}));
+      const {result} = await this.store.openStore({database,table,encrypted,mode});
+      return result;
     } else {
-      return from(Promise.resolve({result:false}));
+      return Promise.resolve(false);
     }
   }
   /**
-   * Execute a set of Raw Statements
-   * @param statements string 
-   */
-  execute(statements:string): Observable<any> {
-    if(this.isService && statements.length > 0) {
-      return from( this.sqlite.execute({statements:statements}));
+   * Create/Set a Table
+   * @param table string
+   */  
+  async setTable(table:string): Promise<any> {
+    if(this.isService) {
+      const {result,message} = await this.store.setTable({table});
+      return Promise.resolve([result,message]);
     } else {
-      return from(Promise.resolve({changes:0}));
+      return Promise.resolve({result:false, message:"Service is not initialized"});
     }
   }
   /**
-   * Execute a Single Raw Statement
-   * @param statement string
+   * Set of Key
+   * @param key string 
+   * @param value string
    */
-  run(statement:string,_values?:Array<any>): Observable<any> {
-    if(this.isService && statement.length > 0) {
-      const values: Array<any> = _values ? _values : [];
-      return from( this.sqlite.run({statement:statement,values:values}));
-    } else {
-      return from(Promise.resolve({changes:0}));
+  async setItem(key:string,value:string): Promise<void> {
+    if(this.isService && key.length > 0) {
+      await this.store.set({ key, value });
     }
   }
   /**
-   * Query a Single Raw Statement
-   * @param statement string
-   * @param values Array<string> optional
+   * Get the Value for a given Key
+   * @param key string 
    */
-  query(statement:string,_values?:Array<string>): Observable<any> {
-    const values: Array<any> = _values ? _values : [];
-    if(this.isService && statement.length > 0) {
-      return from( this.sqlite.query({statement:statement,values:values}));
+  async getItem(key:string): Promise<string> {
+    if(this.isService && key.length > 0) {
+      const {value} = await this.store.get({ key });
+      console.log("in getItem value ",value)
+      return value;
     } else {
-      return from(Promise.resolve({values:[]}));
+      return null;
     }
 
-  } 
-  /**
-   * Close the Database
-   * @param dbName string
-   */
-  close(dbName:string): Observable<any> {
-    if(this.isService) {
-      return from( this.sqlite.close({database:dbName}));
+  }
+  async isKey(key:string): Promise<boolean> {
+    if(this.isService && key.length > 0) {
+      const {result} = await this.store.iskey({ key });
+      return result;
     } else {
-      return from(Promise.resolve({result:false}));
+      return null;
+    }
+
+  }
+  async getAllKeys(): Promise<Array<string>> {
+    if(this.isService ) {
+      const {keys} = await this.store.keys();
+      return keys;
+    } else {
+      return null;
     }
   }
-  /**
-   * Delete the Database file
-   * @param dbName string
-   */
-  deleteDB(dbName:string): Observable<any> {
-    if(this.isService) {
-      return from( this.sqlite.deleteDatabase({database:dbName}));
+  async getAllValues(): Promise<Array<string>> {
+    if(this.isService ) {
+      const {values} = await this.store.values();
+      return values;
     } else {
-      return from(Promise.resolve({result:false}));
+      return null;
     }
+  }
+  async getAllKeysValues(): Promise<Array<any>> {
+    if(this.isService ) {
+      const {keysvalues} = await this.store.keysvalues();
+      return keysvalues;
+    } else {
+      return null;
+    }
+  }
+
+  async removeItem(key:string): Promise<boolean> {
+    if(this.isService && key.length > 0) {
+      const {result} = await this.store.remove({ key });
+      return result;
+    } else {
+      return null;
+    }
+  }
+  async clear(): Promise<boolean> {
+    if(this.isService ) {
+      const {result} = await this.store.clear();
+      return result;
+    } else {
+      return null;
+    }
+  }
+  async deleteStore(_dbName?:string): Promise<boolean> {
+    const database: string = _dbName ? _dbName : "storage";
+    await this.init();
+    if(this.isService ) {
+      const {result} = await this.store.deleteStore({database});
+      return result;
+    }
+    return;
   }
 }
+
 ```
 
 ## Starting an App from Scratch
@@ -244,18 +253,18 @@ The process described below follows the instructions provided in the [Capacitor 
 ### New Ionic/Angular Project
 
 ```bash
-ionic start mySQLiteApp tabs --type=angular --capacitor
+ionic start myStorageApp tabs --type=angular --capacitor
 cd ./mySQLiteApp
 ``` 
 
 ### Initialize Capacitor
 
 ```bash
-npx cap init mySQLiteApp com.example.app
+npx cap init myStorageApp com.example.app
 ```
 
 Your App information [appName] [appId] can be whathever you would like. 
-Here we choose for the example [mySQLiteApp] [com.example.app]
+Here we choose for the example [myStorageApp] [com.example.app]
 
 ### Install #jeepq/capacitor plugin library
 
@@ -269,60 +278,60 @@ npm install --save @jeepq/capacitor@latest
 ng g service sqlite
 ```
 
-In your favorite editor open the ```sqlite.services.ts``` file under the ```src/app```folder and input the code as described above
+In your favorite editor open the ```store.services.ts``` file under the ```src/app/services```folder and input the code as described above
 
 ### Access the Angular Service in your App Angular Components
 
 #### Import in your Angular Component
 
 ```ts
-import { SQLiteService } from '../sqlite.service';
-import { concatAll } from 'rxjs/operators';
-import { Observable, concat} from 'rxjs';
+import { StoreService } from '../services/store.service';
 ```
 
-#### Inject the SQLiteService in your Angular Component Constructor
+#### Inject the StoreService in your Angular Component Constructor
 
 ```ts
-  constructor(private _SQLiteService: SQLiteService) {
+  constructor(private _StoreService: StoreService) {
   }
 ```
 
-#### Initialize CapacitorSQLite plugin
+#### Initialize CapacitorDataStorageSqlite plugin
 
 ```ts
   async ngAfterViewInit() {
-        // Initialize the CapacitorSQLite plugin
-        await this._SQLiteService.initializePlugin();
+        // Initialize the CapacitorDataStorageSQLite plugin
+        await this._StoreService.init();
 
     ...
   }
 ```
 
-#### Usage of the CapacitorSQLite plugin in Angular Component Methods
+#### Usage of the CapacitorDataStorageSqlite plugin in Angular Component Methods
 
 ```ts
 async fooMethod(): Promise<void> {
     ...
-    if(this._SQLiteService.isService) {
-      // open the database
-      this._SQLiteService.openDB("fooDB") 
-      .subscribe(result => {
-        if(result.result) {
-            ...
-
-            ...
-        }
-      }),
+    if(this._StoreService.isService) {
+      // open the data storage
+      let result:any = await this._StoreService.openStore();
+      console.log('storage retCreate result',result)
+      if (result) {
+        await this._StoreService.clear();
+        // store data in the first store
+        await this._StoreService.setItem("session","Session Opened");
+        result = await this._StoreService.getItem("session");
+        console.log('result ',result)
+        ...
+      }
 
     } else {
-        console.log('CapacitorSQLite Plugin: Initialization Failed');
+      console.log("CapacitorDataStorageSqlite Service is not initialized");
     }
     ...
 }
 ```
 
-When the database is open, use the other methods provided by the Angular Service to execute, run, query SQLite raw statements
+When the database is open, use the other methods provided by the Angular Service to setItem, getItem, removeItem, clear, ...
 
 ### Build your App
 
@@ -365,13 +374,13 @@ Once Android launches,
  - Edit the MainActivity.java and add the following import:
 
 ```java
-import com.jeep.plugins.capacitor.CapacitorSQLite;
+import com.jeep.plugins.capacitor.CapacitorDataStorageSqlite;
 ```
 
  - Add the CapacitorSQLite declaration in the this.init method
 
 ```java
-add(CapacitorSQLite.class);
+add(CapacitorDataStorageSqlite.class);
 ```
 
  - you can then build your app through the standard Android Studio workflow.
