@@ -85,7 +85,13 @@ export class TeststoreComponent implements AfterViewInit {
       console.log("Get Data : " + result);
       let ret3: boolean = false;
       if (result === data1.toString()) ret3 = true;
-      if (ret1 && ret2 && ret3) retpopulate = true;
+      // getting a vlue of a non existing key
+      result = await this._StoreService.getItem("foo");
+      console.log("Get Data : " + result);
+      let ret4: boolean = false;
+      if (result === null) ret4 = true;
+
+      if (ret1 && ret2 && ret3 && ret4) retpopulate = true;
 //      if (retpopulate) document.querySelector('.populate').classList.remove('display');
       console.log(" before isKey testNumber ") 
       result = await this._StoreService.isKey("testNumber");
