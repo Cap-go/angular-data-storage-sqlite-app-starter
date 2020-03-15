@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
-import com.jeep.plugins.capacitor.CapacitorDataStorageSqlite;
+import com.jeep.plugin.capacitor.CapacitorDataStorageSqlite;
 
 import java.util.ArrayList;
 

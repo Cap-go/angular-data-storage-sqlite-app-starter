@@ -1,9 +1,9 @@
 # Ionic/Angular Data Storage SQLite App Starter
 
-Ionic/Angular application demonstrating the use of the ```capacitor-data-storage-sqlite``` plugin part of the @jeepq/capacitor plugin library and can be use as an Ionic/Angular application starter.
+Ionic/Angular application demonstrating the use of the ```capacitor-data-storage-sqlite``` plugin  can be used as an Ionic/Angular application starter.
 
 
-The ```capacitor-data-storage-sqlite``` test is accessible in the Tab2 of the Application by clicking on the SQLite test button.
+The ```capacitor-data-storage-sqlite``` test is accessible in the Tab2 of the Application by clicking on the Store test button.
 
 The application uses a service class as a wrapper to the ```capacitor-data-storage-sqlite``` plugin 
 
@@ -266,10 +266,10 @@ npx cap init myStorageApp com.example.app
 Your App information [appName] [appId] can be whathever you would like. 
 Here we choose for the example [myStorageApp] [com.example.app]
 
-### Install #jeepq/capacitor plugin library
+### Install capacitor-data-storage-sqlite plugin
 
 ```bash
-npm install --save @jeepq/capacitor@latest
+npm install --save capacitor-data-storage-sqlite@latest
 ```
 
 ### Add an Angular Service
@@ -374,7 +374,7 @@ Once Android launches,
  - Edit the MainActivity.java and add the following import:
 
 ```java
-import com.jeep.plugins.capacitor.CapacitorDataStorageSqlite;
+import com.jeep.plugin.capacitor.CapacitorDataStorageSqlite;
 ```
 
  - Add the CapacitorSQLite declaration in the this.init method
@@ -386,12 +386,12 @@ add(CapacitorDataStorageSqlite.class);
  - you can then build your app through the standard Android Studio workflow.
 
 
-### When @jeepq/capacitor is updated
+### When capacitor-data-storage-sqlite plugin is updated
 
 Follow this process:
 
 ```bash
-npm install --save @jeepq/capacitor@latest
+npm install --save capacitor-data-storage-sqlite@latest
 npx cap update
 npm run build
 npx cap copy
