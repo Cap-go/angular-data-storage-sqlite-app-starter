@@ -86,13 +86,13 @@ storageSQLite.db
 #### IOS
 
 In Xcode, before building your app, 
- - Go to the ```Pods/Development Pods/JeepqCapacitor/DataStorageSQLite``` folder, 
+ - Go to the ```Pods/Development Pods/CapacitorDataStorageSqlite``` folder, 
  - Modify the ```secret``` and ```newsecret```strings in the Global.swift file.
 
 #### Android
 
 In Android Studio, before building your app,
- - Go to the ```jeepq-capacitor/java/com.jeep.plugins.capacitor/cdssUtils```folder,
+ - Go to the ```capacitor-data-storage-sqlite/java/com.jeep.plugin.capacitor/cdssUtils```folder,
  - Modify the ```secret``` and ```newsecret```strings in the Global.java file.
 
 ### Angular Service
@@ -103,7 +103,7 @@ A Angular Service has been defined as a wrapper to the ```capacitor-data-storage
 import { Injectable } from '@angular/core';
 
 import { Plugins } from '@capacitor/core';
-import * as PluginsLibrary from '@jeepq/capacitor';
+import * as PluginsLibrary from 'capacitor-data-storage-sqlite';
 const { CapacitorDataStorageSqlite, Device } = Plugins;
 
 @Injectable({
@@ -254,7 +254,7 @@ The process described below follows the instructions provided in the [Capacitor 
 
 ```bash
 ionic start myStorageApp tabs --type=angular --capacitor
-cd ./mySQLiteApp
+cd ./myStorageApp
 ``` 
 
 ### Initialize Capacitor
@@ -377,7 +377,7 @@ Once Android launches,
 import com.jeep.plugin.capacitor.CapacitorDataStorageSqlite;
 ```
 
- - Add the CapacitorSQLite declaration in the this.init method
+ - Add the CapacitorDataStorageSQLite declaration in the this.init method
 
 ```java
 add(CapacitorDataStorageSqlite.class);
