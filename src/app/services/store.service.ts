@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Plugins } from '@capacitor/core';
-import * as PluginsLibrary from 'capacitor-data-storage-sqlite';
+import * as CDSSPlugin from 'capacitor-data-storage-sqlite';
 const { CapacitorDataStorageSqlite, Device } = Plugins;
 
 @Injectable({
@@ -21,10 +21,13 @@ export class StoreService {
     this.platform = info.platform;
     if (this.platform === "ios" || this.platform === "android") {
       this.store = CapacitorDataStorageSqlite;
+    } else if(this.platform === "electron") {
+      this.store = CDSSPlugin.CapacitorDataStorageSqliteElectron;
     } else {
-      this.store = PluginsLibrary.CapacitorDataStorageSqlite;
+      this.store = CDSSPlugin.CapacitorDataStorageSqlite;
     }
     this.isService = true;
+    console.log('in init ',this.platform,this.isService)
   }
   /**
    * Open a Database

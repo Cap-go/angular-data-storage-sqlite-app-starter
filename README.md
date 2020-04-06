@@ -103,7 +103,7 @@ A Angular Service has been defined as a wrapper to the ```capacitor-data-storage
 import { Injectable } from '@angular/core';
 
 import { Plugins } from '@capacitor/core';
-import * as PluginsLibrary from 'capacitor-data-storage-sqlite';
+import * as CDSSPlugin from 'capacitor-data-storage-sqlite';
 const { CapacitorDataStorageSqlite, Device } = Plugins;
 
 @Injectable({
@@ -123,8 +123,10 @@ export class StoreService {
     this.platform = info.platform;
     if (this.platform === "ios" || this.platform === "android") {
       this.store = CapacitorDataStorageSqlite;
+    } else if(this.platform === "electron") {
+      this.store = CDSSPlugin.CapacitorDataStorageSqliteElectron;
     } else {
-      this.store = PluginsLibrary.CapacitorDataStorageSqlite;
+      this.store = CDSSPlugin.CapacitorDataStorageSqlite;
     }
     this.isService = true;
   }
@@ -384,6 +386,67 @@ add(CapacitorDataStorageSqlite.class);
 ```
 
  - you can then build your app through the standard Android Studio workflow.
+
+#### Electron
+
+In your application folder add the Electron platform
+
+```bash
+npx cap add electron
+```
+
+In the Electron folder of your application
+
+```bash
+npm install --save sqlite3
+npm install --save-dev @types/sqlite3
+npm install --save-dev electron-rebuild
+```
+
+Modify the Electron package.json file by adding a script "postinstall"
+
+```json
+  "scripts": {
+    "electron:start": "electron ./",
+    "postinstall": "electron-rebuild -f -w sqlite3"
+  },
+```
+
+Execute the postinstall script
+
+```bash
+npm run postinstall
+```
+Go back in the main folder of your application
+Add a script in the index.html file of your application in the body tag
+
+```html
+<body>
+  <app-root></app-root>
+  <script>
+    if (typeof (process.versions.electron) === 'string' && process.versions.hasOwnProperty('electron')) {
+      const sqlite3 = require('sqlite3');
+      const fs = require('fs');
+      const path = require('path');
+      window.sqlite3 = sqlite3;
+      window.fs = fs;
+      window.path = path;
+    }
+  </script>
+</body>
+```
+and then build the apllication
+
+```bash
+ npx cap update
+ npm run build
+ npx cap copy
+ npx cap open electron
+```
+
+The datastores created are under **YourApplication/Electron/DataStorage**
+
+
 
 
 ### When capacitor-data-storage-sqlite plugin is updated

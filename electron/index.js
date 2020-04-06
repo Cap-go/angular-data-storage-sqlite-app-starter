@@ -37,11 +37,12 @@ async function createWindow () {
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, 'node_modules', '@capacitor', 'electron', 'dist', 'electron-bridge.js')
+
     }
   });
 
   configCapacitor(mainWindow);
-
+  
   if (isDevMode) {
     // Set our above template to the Menu Object if we are in development mode, dont want users having the devtools.
     Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplateDev));

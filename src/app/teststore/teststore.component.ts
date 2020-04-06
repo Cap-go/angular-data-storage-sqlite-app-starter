@@ -58,7 +58,7 @@ export class TeststoreComponent implements AfterViewInit {
     let retremove = false;
     let retclear = false;
     console.log('in testFirstStore ***** ')
-    let result:any = await this._StoreService.openStore();
+    let result:any = await this._StoreService.openStore("");
     console.log('storage retCreate result',result)
     if (result) {
       await this._StoreService.clear();
@@ -73,7 +73,7 @@ export class TeststoreComponent implements AfterViewInit {
       let data: any = {'a':20,'b':'Hello World','c':{'c1':40,'c2':'cool'}}
       await this._StoreService.setItem("testJson",JSON.stringify(data));
       result = await this._StoreService.getItem("testJson");
-      console.log("Get Data : " + result);
+      console.log("Get Data Json: " + result);
       let ret2: boolean = false;
       if (result === JSON.stringify(data)) ret2 = true;
       console.log("JSON Object ret2 ",ret2)
@@ -82,12 +82,12 @@ export class TeststoreComponent implements AfterViewInit {
       let data1: any = 243.567
       await this._StoreService.setItem("testNumber",data1.toString());
       result = await this._StoreService.getItem("testNumber");
-      console.log("Get Data : " + result);
+      console.log("Get Data Number: " + result);
       let ret3: boolean = false;
       if (result === data1.toString()) ret3 = true;
       // getting a vlue of a non existing key
       result = await this._StoreService.getItem("foo");
-      console.log("Get Data : " + result);
+      console.log("Get Data foo: " + result);
       let ret4: boolean = false;
       if (result === null) ret4 = true;
 
@@ -157,6 +157,7 @@ export class TeststoreComponent implements AfterViewInit {
         console.log("after clear res.keysvalues.length " + res.length)
         if(res.length === 0) {
           retclear = true;
+          console.log(retpopulate,retiskey,retkeys,retvalues,retkeysvalues,retremove,retclear);
 //          document.querySelector('.clear').classList.remove('display');
           if(retpopulate && retiskey && retkeys && retvalues && retkeysvalues && retremove && retclear) {
             retTest1 = true;
@@ -169,7 +170,6 @@ export class TeststoreComponent implements AfterViewInit {
       } else {
 //          document.querySelector('.failure1').classList.remove('display');
       }
-
     }
     console.log('in testFirstStore end ***** ')
 
