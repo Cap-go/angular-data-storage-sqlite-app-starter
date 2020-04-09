@@ -43,6 +43,7 @@ export class StoreService {
       const encrypted:boolean = _encrypted ? _encrypted : false;
       const mode: string = _mode ? _mode : "no-encryption";
       const {result} = await this.store.openStore({database,table,encrypted,mode});
+      console.log("*** result in openStore", result)
       return result;
     } else {
       return Promise.resolve(false);
