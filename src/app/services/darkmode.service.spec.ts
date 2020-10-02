@@ -6,7 +6,7 @@ describe('DarkModeService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: DarkModeService = TestBed.get(DarkmodeService);
+    const service: DarkModeService = TestBed.get(DarkModeService);
     expect(service).toBeTruthy();
   });
 });
