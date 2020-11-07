@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { StoreService } from '../services/store.service';
+import { StoreService } from '../../services/store.service';
 
 @Component({
   selector: 'app-teststore',
@@ -37,13 +37,13 @@ export class TeststoreComponent implements AfterViewInit {
       const retFirst: boolean = await this.testFirstStore();
       console.log("retFirst : ",retFirst)
       if( retFirst) {
-        document.querySelector('.success1').classList.remove('display');
+        document.querySelector('.store-success1').classList.remove('display');
       } else {
-        document.querySelector('.failure1').classList.remove('display');
+        document.querySelector('.store-failure1').classList.remove('display');
       }
     } else {
       console.log("Service is not initialized");
-      document.querySelector('.failure1').classList.remove('display');
+      document.querySelector('.store-failure1').classList.remove('display');
     }
   }
   async testFirstStore(): Promise<boolean> {

@@ -2120,12 +2120,6 @@ var capacitorPlugin = (function (exports) {
     class Data {
     }
 
-    //import * as sqlite3 from 'sqlite3';
-    //import * as path from 'path';
-    //import * as fs from 'fs';
-    //const sqlite3: any = window['sqlite3' as any];
-    ////const fs: any = window['fs' as any];
-    //const path: any = window['path' as any];
     class UtilsSQLite {
         constructor() {
             this.pathDB = './DataStorage';
@@ -2136,57 +2130,65 @@ var capacitorPlugin = (function (exports) {
             this.NodeFs = require('fs');
             this.SQLite3 = require('sqlite3');
         }
-        connection(dbName, readOnly /*,key?:string*/) {
-            const flags = readOnly
-                ? this.SQLite3.OPEN_READONLY
-                : this.SQLite3.OPEN_CREATE | this.SQLite3.OPEN_READWRITE;
-            console.log('in UtilsSQLite.connection flags ', flags);
-            // get the path for the database
-            const dbPath = this._getDBPath(dbName);
-            console.log("#### dbPath " + dbPath);
-            let dbOpen;
-            if (dbPath != null) {
-                try {
-                    dbOpen = new this.SQLite3.Database(dbPath, flags);
-                    return dbOpen;
+        connection(dbName, readOnly) {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                const flags = readOnly
+                    ? this.SQLite3.OPEN_READONLY
+                    : this.SQLite3.OPEN_CREATE | this.SQLite3.OPEN_READWRITE;
+                // get the path for the database
+                const dbPath = yield this._getDBPath(dbName);
+                let dbOpen;
+                if (dbPath != null) {
+                    try {
+                        dbOpen = new this.SQLite3.Database(dbPath, flags);
+                        resolve(dbOpen);
+                    }
+                    catch (e) {
+                        console.log('Error: in UtilsSQLite.connection ', e);
+                        resolve(null);
+                    }
                 }
-                catch (e) {
-                    console.log('Error: in UtilsSQLite.connection ', e);
-                    return null;
-                }
-            }
+            }));
         }
-        getWritableDatabase(dbName /*, secret: string*/) {
-            const db = this.connection(dbName, false /*,secret*/);
-            return db;
+        getWritableDatabase(dbName) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const db = yield this.connection(dbName, false /*,secret*/);
+                return db;
+            });
         }
-        getReadableDatabase(dbName /*, secret: string*/) {
-            const db = this.connection(dbName, true /*,secret*/);
-            return db;
+        getReadableDatabase(dbName) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const db = yield this.connection(dbName, true /*,secret*/);
+                return db;
+            });
         }
         _getDBPath(dbName) {
-            let retPath = null;
-            const dbFolder = this.pathDB;
-            retPath = this.Path.join(dbFolder, dbName);
-            try {
-                if (!this.NodeFs.existsSync(dbFolder)) {
-                    this._mkdirSyncRecursive(dbFolder);
+            return __awaiter(this, void 0, void 0, function* () {
+                let retPath = null;
+                const dbFolder = this.pathDB;
+                retPath = this.Path.join(dbFolder, dbName);
+                try {
+                    if (!this.NodeFs.existsSync(dbFolder)) {
+                        yield this._mkdirSyncRecursive(dbFolder);
+                    }
                 }
-            }
-            catch (e) {
-                console.log('Error: in getDBPath', e);
-            }
-            return retPath;
+                catch (e) {
+                    console.log('Error: in getDBPath', e);
+                }
+                return retPath;
+            });
         }
         _mkdirSyncRecursive(directory) {
-            var path = directory.replace(/\/$/, '').split('/');
-            for (var i = 1; i <= path.length; i++) {
-                var segment = path.slice(0, i).join('/');
-                segment.length > 0 && !this.NodeFs.existsSync(segment)
-                    ? this.NodeFs.mkdirSync(segment)
-                    : null;
-            }
-            return;
+            return __awaiter(this, void 0, void 0, function* () {
+                var path = directory.replace(/\/$/, '').split('/');
+                for (var i = 1; i <= path.length; i++) {
+                    var segment = path.slice(0, i).join('/');
+                    segment.length > 0 && !this.NodeFs.existsSync(segment)
+                        ? this.NodeFs.mkdirSync(segment)
+                        : null;
+                }
+                return;
+            });
         }
     }
 
@@ -2204,75 +2206,99 @@ var capacitorPlugin = (function (exports) {
             this._utils = new UtilsSQLite();
         }
         openStore(dbName, tableName) {
-            return new Promise(resolve => {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 let ret = false;
-                this._db = this._utils.connection(dbName, false /*,this._secret*/);
+                this._db = yield this._utils.connection(dbName, false);
                 if (this._db !== null) {
-                    this._createTable(tableName);
-                    this._dbName = dbName;
-                    this._tableName = tableName;
-                    ret = true;
+                    const bRet = yield this._createTable(tableName);
+                    if (bRet) {
+                        this._dbName = dbName;
+                        this._tableName = tableName;
+                        console.log('** OpenStore this._tableName ' +
+                            this._tableName);
+                        ret = true;
+                    }
+                    else {
+                        this._dbName = '';
+                        this._tableName = '';
+                        console.log('** OpenStore this._tableName ' +
+                            this._tableName + ' failed');
+                    }
                 }
                 resolve(ret);
-            });
+            }));
         }
         _createTable(tableName) {
-            const CREATE_STORAGE_TABLE = 'CREATE TABLE IF NOT EXISTS ' +
-                tableName +
-                '(' +
-                COL_ID +
-                ' INTEGER PRIMARY KEY AUTOINCREMENT,' + // Define a primary key
-                COL_NAME +
-                ' TEXT NOT NULL UNIQUE,' +
-                COL_VALUE +
-                ' TEXT' +
-                ')';
-            try {
-                this._db.run(CREATE_STORAGE_TABLE, this._createIndex.bind(this, tableName));
-            }
-            catch (e) {
-                console.log('Error: in createTable ', e);
-            }
+            return __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                    let ret = false;
+                    const CREATE_STORAGE_TABLE = 'CREATE TABLE IF NOT EXISTS ' +
+                        tableName +
+                        '(' +
+                        COL_ID +
+                        ' INTEGER PRIMARY KEY AUTOINCREMENT,' + // Define a primary key
+                        COL_NAME +
+                        ' TEXT NOT NULL UNIQUE,' +
+                        COL_VALUE +
+                        ' TEXT' +
+                        ')';
+                    this._db.run(CREATE_STORAGE_TABLE, (err) => __awaiter(this, void 0, void 0, function* () {
+                        if (err) {
+                            console.log('Error: in createTable ', err.message);
+                            resolve(ret);
+                        }
+                        else {
+                            ret = yield this._createIndex(tableName);
+                            resolve(ret);
+                        }
+                    }));
+                }));
+            });
         }
         _createIndex(tableName) {
-            const idx = `index_${tableName}_on_${COL_NAME}`;
-            const CREATE_INDEX_NAME = 'CREATE INDEX IF NOT EXISTS ' +
-                idx +
-                ' ON ' +
-                tableName +
-                ' (' +
-                COL_NAME +
-                ')';
-            try {
-                this._db.run(CREATE_INDEX_NAME);
-            }
-            catch (e) {
-                console.log('Error: in createIndex ', e);
-            }
+            return __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                    const idx = `index_${tableName}_on_${COL_NAME}`;
+                    const CREATE_INDEX_NAME = 'CREATE INDEX IF NOT EXISTS ' +
+                        idx +
+                        ' ON ' +
+                        tableName +
+                        ' (' +
+                        COL_NAME +
+                        ')';
+                    this._db.run(CREATE_INDEX_NAME, (err) => __awaiter(this, void 0, void 0, function* () {
+                        if (err) {
+                            console.log('Error: in createIndex ', err.message);
+                            resolve(false);
+                        }
+                        else {
+                            resolve(true);
+                        }
+                    }));
+                }));
+            });
         }
         setTable(tableName) {
             return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 let ret = false;
-                this._db = this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
-                try {
-                    this._createTable(tableName);
+                this._db = yield this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
+                const bRet = yield this._createTable(tableName);
+                if (bRet) {
                     this._tableName = tableName;
                     ret = true;
-                    console.log('create table successfull ', this._tableName);
                 }
-                catch (e) {
-                    console.log('Error: in createTable ', e);
+                else {
+                    this._tableName = '';
+                    ret = false;
                 }
-                finally {
-                    this._db.close();
-                    resolve(ret);
-                }
+                this._db.close();
+                resolve(ret);
             }));
         }
         // Insert a data into the database
         set(data) {
             return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-                const db = this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
+                const db = yield this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
                 // Check if data.name does not exist otherwise update it
                 const res = yield this.get(data.name);
                 if (res.id != null) {
@@ -2302,9 +2328,9 @@ var capacitorPlugin = (function (exports) {
         }
         // get a Data
         get(name) {
-            return new Promise(resolve => {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 let data = null;
-                const db = this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
+                const db = yield this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
                 const DATA_SELECT_QUERY = 'SELECT * FROM ' +
                     this._tableName +
                     ' WHERE ' +
@@ -2331,12 +2357,12 @@ var capacitorPlugin = (function (exports) {
                         resolve(data);
                     }
                 });
-            });
+            }));
         }
         // update a Data
         update(data) {
-            return new Promise(resolve => {
-                const db = this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                const db = yield this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
                 const DATA_UPDATE = `UPDATE "${this._tableName}" 
             SET "${COL_VALUE}" = ? WHERE "${COL_NAME}" = ?`;
                 db.run(DATA_UPDATE, [data.value, data.name], (err) => {
@@ -2350,7 +2376,7 @@ var capacitorPlugin = (function (exports) {
                         resolve(true);
                     }
                 });
-            });
+            }));
         }
         // isKey exists
         iskey(name) {
@@ -2369,7 +2395,7 @@ var capacitorPlugin = (function (exports) {
             return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 const res = yield this.get(name);
                 if (res.id != null) {
-                    const db = this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
+                    const db = yield this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
                     const DATA_DELETE = `DELETE FROM "${this._tableName}" 
                 WHERE "${COL_NAME}" = ?`;
                     db.run(DATA_DELETE, name, (err) => {
@@ -2393,7 +2419,7 @@ var capacitorPlugin = (function (exports) {
         // remove all keys
         clear() {
             return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-                const db = this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
+                const db = yield this._utils.getWritableDatabase(this._dbName /*,this._secret*/);
                 const DATA_DELETE = `DELETE FROM "${this._tableName}"`;
                 db.run(DATA_DELETE, [], (err) => {
                     if (err) {
@@ -2421,10 +2447,11 @@ var capacitorPlugin = (function (exports) {
             }));
         }
         keys() {
-            return new Promise(resolve => {
-                const db = this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
-                const DATA_SELECT_KEYS = `SELECT "${COL_NAME}" FROM "${this._tableName}"`;
-                db.all(DATA_SELECT_KEYS, (err, rows) => {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                const db = yield this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
+                let SELECT_KEYS = `SELECT "${COL_NAME}" FROM `;
+                SELECT_KEYS += `"${this._tableName}"`;
+                db.all(SELECT_KEYS, (err, rows) => {
                     if (err) {
                         db.close();
                         resolve([]);
@@ -2440,13 +2467,14 @@ var capacitorPlugin = (function (exports) {
                         }
                     }
                 });
-            });
+            }));
         }
         values() {
-            return new Promise(resolve => {
-                const db = this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
-                const DATA_SELECT_VALUES = `SELECT "${COL_VALUE}" FROM "${this._tableName}"`;
-                db.all(DATA_SELECT_VALUES, (err, rows) => {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                const db = yield this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
+                let SELECT_VALUES = `SELECT "${COL_VALUE}" FROM `;
+                SELECT_VALUES += `"${this._tableName}"`;
+                db.all(SELECT_VALUES, (err, rows) => {
                     if (err) {
                         db.close();
                         resolve([]);
@@ -2462,13 +2490,41 @@ var capacitorPlugin = (function (exports) {
                         }
                     }
                 });
-            });
+            }));
+        }
+        filtervalues(filter) {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                if (!filter.startsWith("%") && !filter.endsWith("%")) {
+                    filter = "%" + filter + "%";
+                }
+                const db = yield this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
+                let SELECT_VALUES = `SELECT "${COL_VALUE}" FROM `;
+                SELECT_VALUES += `"${this._tableName}" WHERE name `;
+                SELECT_VALUES += `LIKE "${filter}"`;
+                db.all(SELECT_VALUES, (err, rows) => {
+                    if (err) {
+                        db.close();
+                        resolve([]);
+                    }
+                    else {
+                        let arValues = [];
+                        for (let i = 0; i < rows.length; i++) {
+                            arValues = [...arValues, rows[i].value];
+                            if (i === rows.length - 1) {
+                                db.close();
+                                resolve(arValues);
+                            }
+                        }
+                    }
+                });
+            }));
         }
         keysvalues() {
-            return new Promise(resolve => {
-                const db = this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
-                const DATA_SELECT_KEYSVALUES = `SELECT "${COL_NAME}" , "${COL_VALUE}" FROM "${this._tableName}"`;
-                db.all(DATA_SELECT_KEYSVALUES, (err, rows) => {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                const db = yield this._utils.getReadableDatabase(this._dbName /*,this._secret*/);
+                let SELECT_KEYSVALUES = `SELECT "${COL_NAME}" , `;
+                SELECT_KEYSVALUES += `"${COL_VALUE}" FROM "${this._tableName}"`;
+                db.all(SELECT_KEYSVALUES, (err, rows) => {
                     if (err) {
                         db.close();
                         resolve([]);
@@ -2478,7 +2534,7 @@ var capacitorPlugin = (function (exports) {
                         resolve(rows);
                     }
                 });
-            });
+            }));
         }
         deleteStore(dbName) {
             return new Promise(resolve => {
@@ -2511,7 +2567,7 @@ var capacitorPlugin = (function (exports) {
         echo(options) {
             return __awaiter(this, void 0, void 0, function* () {
                 console.log('ECHO in Electron Plugin', options);
-                return options;
+                return { value: options.value };
             });
         }
         openStore(options) {
@@ -2626,6 +2682,18 @@ var capacitorPlugin = (function (exports) {
             return __awaiter(this, void 0, void 0, function* () {
                 let ret;
                 ret = yield this.mDb.values();
+                return Promise.resolve({ values: ret });
+            });
+        }
+        filtervalues(options) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let filter = options.filter;
+                if (filter == null || typeof filter != 'string') {
+                    return Promise.reject({ result: false,
+                        message: 'Must Must provide filter as string' });
+                }
+                let ret;
+                ret = yield this.mDb.filtervalues(filter);
                 return Promise.resolve({ values: ret });
             });
         }

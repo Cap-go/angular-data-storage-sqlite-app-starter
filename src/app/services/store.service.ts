@@ -104,6 +104,14 @@ export class StoreService {
       return null;
     }
   }
+  async getFilterValues(filter:string): Promise<Array<string>> {
+    if(this.isService ) {
+      const {values} = await this.store.filtervalues({ filter });
+      return values;
+    } else {
+      return null;
+    }
+  }
   async getAllKeysValues(): Promise<Array<any>> {
     if(this.isService ) {
       const {keysvalues} = await this.store.keysvalues();
