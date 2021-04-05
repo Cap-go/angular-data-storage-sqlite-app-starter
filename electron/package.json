@@ -12,15 +12,15 @@
     "postinstall": "electron-rebuild -f -w sqlite3"
   },
   "dependencies": {
-    "@capacitor-community/electron-core": "^1.0.0",
-    "sqlite3": "^5.0.0"
+    "@capacitor-community/electron": "^1.4.0",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
-    "@types/sqlite3": "^3.1.6",
-    "electron": "^9.1.1",
-    "electron-builder": "^22.7.0",
-    "electron-rebuild": "^2.3.4",
-    "typescript": "~3.9.5"
+    "@types/sqlite3": "^3.1.7",
+    "electron": "^12.0.1",
+    "electron-builder": "^22.10.5",
+    "electron-rebuild": "^2.3.5",
+    "typescript": "~4.0.5"
   },
   "keywords": [
     "capacitor",
@@ -33,7 +33,7 @@
     "productName": "Capacitor App",
     "files": [
       "assets/*",
-      "build/index.js",
+      "build/*",
       "preloader.js",
       "plugins/*",
       "capacitor.config.json",
