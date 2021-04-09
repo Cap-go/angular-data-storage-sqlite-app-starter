@@ -2,6 +2,10 @@
 
 <h3 align="center">Ionic/Angular Data Storage SQLite App Starter</h3>
 <p align="center"><strong><code>-angular-data-storage-sqlite-app-starter</code></strong></p>
+<br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3 🚧</strong></p><br>
+<p align="center">
+  iOS for testing only</p><br>
 <p align="center">Ionic/Angular application demonstrating the use of the</p>
 <p align="center"><strong><code>capacitor-data-storage-sqlite</code></strong></p>
 <br>
