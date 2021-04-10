@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Tab2Page } from './tab2.page';
 import { TeststoreComponentModule } from '../components/teststore/teststore.module';
 import { FilterKeysComponentModule } from '../components/filterkeys/filterkeys.module';
+import { MultitablesstoreComponentModule } from '../components/multitablesstore/multitablesstore.module';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { FilterKeysComponentModule } from '../components/filterkeys/filterkeys.m
     FormsModule,
     TeststoreComponentModule,
     FilterKeysComponentModule,
+    MultitablesstoreComponentModule,
     RouterModule.forChild([{ path: '', component: Tab2Page }])
   ],
   declarations: [Tab2Page]
