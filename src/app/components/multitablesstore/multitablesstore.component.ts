@@ -107,8 +107,8 @@ export class MultitablesstoreComponent implements AfterViewInit {
       result = await this._StoreService.getAllTables();
       console.log("Get tables result: " + result);
   
-      if(result.length != 2 || result[0] != "saveData"
-          || result[1] != "otherData") {
+      if(result.length != 2 || !result.includes("saveData")
+          || !result.includes("otherData")) {
         return Promise.reject(new Error("getAllTables 1 failed"));
       }
       // store new data in "saveData" table
@@ -132,7 +132,7 @@ export class MultitablesstoreComponent implements AfterViewInit {
       result = await this._StoreService.getAllTables();
       console.log("Get tables result: " + result);
   
-      if(result.length != 1 || result[0] != "saveData") {
+      if(result.length != 1 || !result.includes("saveData")) {
         return Promise.reject(new Error("getAllTables 2 failed"));
       }
 
