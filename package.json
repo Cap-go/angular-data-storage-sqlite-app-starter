@@ -1,6 +1,6 @@
 {
   "name": "angular-data-storage-sqlite-app-starter",
-  "version": "2.0.0-alpha.3",
+  "version": "2.0.0-alpha.4",
   "description": "Ionic/Angular Data Storage SQLite Application Starter",
   "author": "Jean Pierre Quéau",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "@ionic-native/splash-screen": "latest",
     "@ionic-native/status-bar": "latest",
     "@ionic/angular": "latest",
-    "capacitor-data-storage-sqlite": "^3.0.0-alpha.3",
+    "capacitor-data-storage-sqlite": "^3.0.0-alpha.4",
     "rxjs": "latest",
     "tslib": "latest",
     "zone.js": "latest"

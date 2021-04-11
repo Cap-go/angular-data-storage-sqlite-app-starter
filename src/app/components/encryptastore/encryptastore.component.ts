@@ -3,11 +3,11 @@ import { StoreService } from '../../services/store.service';
 import { Dialog } from '@capacitor/dialog';
 
 @Component({
-  selector: 'app-multitables-store',
-  templateUrl: './multitablesstore.component.html',
-  styleUrls: ['./multitablesstore.component.scss'],
+  selector: 'app-encryptastore',
+  templateUrl: './encryptastore.component.html',
+  styleUrls: ['./encryptastore.component.scss'],
 })
-export class MultitablesstoreComponent implements AfterViewInit {
+export class EncryptaStoreComponent implements AfterViewInit {
   platform: string;
   isService: boolean = false;
   store: any = null;
@@ -38,34 +38,44 @@ export class MultitablesstoreComponent implements AfterViewInit {
 
 
   async runTests(): Promise<void> {
-    this._cardStorage = document.querySelector('.card-multitablesstore');
+    this._cardStorage = document.querySelector('.card-encryptastore');
 
     if(this._StoreService.isService) {
       // reset the Dom in case of multiple runs
       await this.resetStorageDisplay();
       try {
-        await this.testMultiTablesStore();
-        document.querySelector('.multitables-store-success1').classList.remove('display');
+        await this.testEncryptaStore();
+        document.querySelector('.encryptastore-success1').classList.remove('display');
       } catch (err) {
-        document.querySelector('.multitables-store-failure1').classList.remove('display');
+        document.querySelector('.encryptastore-failure1').classList.remove('display');
         await this._showAlert(err.message);
       }
     } else {
       console.log("Service is not initialized");
-      document.querySelector('.multitables-store-failure1').classList.remove('display');
+      document.querySelector('.encryptastore-failure1').classList.remove('display');
       await this._showAlert("Service is not initialized");
     }
   }
-  async testMultiTablesStore(): Promise<void> {
+  async testEncryptaStore(): Promise<void> {
     //populate some data
     //string
-    console.log('in testMultiTablesStore ***** ')
+    console.log('in testEncryptaStore ***** ')
     try {
-      await this._StoreService.openStore("myStore", "saveData");
+      // ********************************************
+      // * check if the store exists and deletes it *
+      // ********************************************
+      let result: any = await this._StoreService.isStoreExists("encryptStore");
+      if(result) {
+        await this._StoreService.deleteStore("encryptStore");
+      }
+      // ******************
+      // * create a store *
+      // ******************
+      await this._StoreService.openStore("encryptStore", "saveData");
       await this._StoreService.clear();
       // store data in the "saveData" table
       await this._StoreService.setItem("app","App Opened");
-      let result: any = await this._StoreService.getItem("app");
+      result = await this._StoreService.getItem("app");
       if (result != "App Opened") {
         return Promise.reject(new Error("app failed"));
       }
@@ -79,7 +89,7 @@ export class MultitablesstoreComponent implements AfterViewInit {
       // set a new table "otherData"
       await this._StoreService.setTable("otherData");
       await this._StoreService.clear();
-      // store data in the "saveData" table
+      // store data in the "otherData" table
       await this._StoreService.setItem("key1","Hello World");
       result = await this._StoreService.getItem("key1");
       if (result != "Hello World") {
@@ -92,18 +102,16 @@ export class MultitablesstoreComponent implements AfterViewInit {
       if (result != JSON.stringify(data1)){
         return Promise.reject(new Error("key2 failed"));
       }
+      // close the store
+      if(this.platform === "android") {
+        await this._StoreService.closeStore("encryptStore");
+      }
 
-      // test isTable
-      result = await this._StoreService.isTable("saveData");
-      console.log("isTable saveData " + result)
-      if(!result) {
-        return Promise.reject(new Error("isTable saveData failed"));
-      }
-      result = await this._StoreService.isTable("foo");
-      console.log("isTable foo " + result)
-      if(result) {
-        return Promise.reject(new Error("isTable foo failed"));
-      }
+      // *******************
+      // * encrypt a store *
+      // *******************
+      await this._StoreService.openStore("encryptStore", "saveData", true,
+                                         "encryption");
       // test getAllTables
       result = await this._StoreService.getAllTables();
       console.log("Get tables result: " + result);
@@ -127,22 +135,37 @@ export class MultitablesstoreComponent implements AfterViewInit {
           result[2].key != "message" || result[2].value != "Welcome from Jeep") {
         return Promise.reject(new Error("getAllKeysValues failed"));
       }
-      // test deleteTable
-      await this._StoreService.deleteTable("otherData");
+      // close the store
+      if(this.platform === "android") {
+        await this._StoreService.closeStore("encryptStore");
+      }
+
+      // ****************************
+      // * open the encrypted store *
+      // ****************************
+      await this._StoreService.openStore("encryptStore", "saveData", true,
+                                         "secret");
       // test getAllTables
       result = await this._StoreService.getAllTables();
       console.log("Get tables result: " + result);
-  
-      if(result.length != 1 || !result.includes("saveData")) {
+      if(result.length != 2 || !result.includes("saveData")
+          || !result.includes("otherData")) {
         return Promise.reject(new Error("getAllTables 2 failed"));
       }
-
-      if(this.platform === "android") {
-      // test if "myStore" is opened
-        result = await this._StoreService.isStoreOpen("myStore");
-        if(result) await this._StoreService.closeStore("myStore");
+      // test getAllKeysValues
+      result = await this._StoreService.getAllKeysValues();
+      if(result.length != 3 ||
+          result[0].key != "app" || result[0].value != "App Opened" ||
+          result[1].key != "user" || result[1].value != JSON.stringify(data) ||
+          result[2].key != "message" || result[2].value != "Welcome from Jeep") {
+        return Promise.reject(new Error("getAllKeysValues failed"));
       }
-      console.log('in testMultiTablesStore end ***** ')
+      // close the store
+      if(this.platform === "android") {
+        await this._StoreService.closeStore("encryptStore");
+      }
+
+      console.log('in testEncryptaStore end ***** ')
       return Promise.resolve();
     } catch (err) {
       return Promise.reject(err);

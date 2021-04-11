@@ -22,7 +22,7 @@ export class StoreService {
     console.log('in init ',this.platform,this.isService)
   }
   /**
-   * Open a Database
+   * Open a Store
    * @param _dbName string optional
    * @param _table string optional
    * @param _encrypted boolean optional 
@@ -42,6 +42,57 @@ export class StoreService {
       }      
     } else {
       return Promise.reject(new Error("openStore: Store not opened"));
+    }
+  }
+  /**
+   * Close a store
+   * @param dbName 
+   * @returns 
+   */
+  async closeStore(dbName: String): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        await this.store.closeStore({database:dbName});
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }      
+    } else {
+      return Promise.reject(new Error("close: Store not opened"));
+    }
+  }
+  /**
+   * Check if a store is opened
+   * @param dbName 
+   * @returns 
+   */
+  async isStoreOpen(dbName: String): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        const ret = await this.store.isStoreOpen({database:dbName});
+        return Promise.resolve(ret);
+      } catch (err) {
+        return Promise.reject(err);
+      }      
+    } else {
+      return Promise.reject(new Error("isStoreOpen: Store not opened"));
+    }
+  }
+  /**
+   * Check if a store already exists
+   * @param dbName
+   * @returns 
+   */
+  async isStoreExists(dbName: String): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        const ret = await this.store.isStoreExists({database:dbName});
+        return Promise.resolve(ret);
+      } catch (err) {
+        return Promise.reject(err);
+      }      
+    } else {
+      return Promise.reject(new Error("isStoreExists: Store not opened"));
     }
   }
   /**

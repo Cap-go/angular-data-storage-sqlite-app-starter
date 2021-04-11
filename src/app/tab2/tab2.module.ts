@@ -7,6 +7,8 @@ import { Tab2Page } from './tab2.page';
 import { TeststoreComponentModule } from '../components/teststore/teststore.module';
 import { FilterKeysComponentModule } from '../components/filterkeys/filterkeys.module';
 import { MultitablesstoreComponentModule } from '../components/multitablesstore/multitablesstore.module';
+import { EncryptaStoreComponentModule } from '../components/encryptastore/encryptastore.module';
+import { NewEncryptedStoreComponentModule } from '../components/newencryptedstore/newencryptedstore.module';
 
 @NgModule({
   imports: [
@@ -16,6 +18,8 @@ import { MultitablesstoreComponentModule } from '../components/multitablesstore/
     TeststoreComponentModule,
     FilterKeysComponentModule,
     MultitablesstoreComponentModule,
+    EncryptaStoreComponentModule,
+    NewEncryptedStoreComponentModule,
     RouterModule.forChild([{ path: '', component: Tab2Page }])
   ],
   declarations: [Tab2Page]
