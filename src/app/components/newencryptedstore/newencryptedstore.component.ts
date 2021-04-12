@@ -99,7 +99,7 @@ export class NewEncryptedStoreComponent implements AfterViewInit {
         return Promise.reject(new Error("getAllKeysValues failed 1"));
       }
       // close the store
-      if(this.platform === "android") {
+      if(this.platform === "android" || this.platform === "ios") {
         await this._StoreService.closeStore("encryptedStore");
       }
       // *********************************
@@ -115,7 +115,7 @@ export class NewEncryptedStoreComponent implements AfterViewInit {
         return Promise.reject(new Error("getAllKeysValues failed 2"));
       }
       // close the store
-      if(this.platform === "android") {
+      if(this.platform === "android" || this.platform === "ios") {
         await this._StoreService.closeStore("encryptedStore");
       }
 

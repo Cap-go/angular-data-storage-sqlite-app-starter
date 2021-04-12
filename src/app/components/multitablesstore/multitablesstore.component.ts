@@ -137,7 +137,7 @@ export class MultitablesstoreComponent implements AfterViewInit {
         return Promise.reject(new Error("getAllTables 2 failed"));
       }
 
-      if(this.platform === "android") {
+      if(this.platform === "android" || this.platform === "ios") {
       // test if "myStore" is opened
         result = await this._StoreService.isStoreOpen("myStore");
         if(result) await this._StoreService.closeStore("myStore");

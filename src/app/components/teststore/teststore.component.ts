@@ -79,12 +79,13 @@ export class TeststoreComponent implements AfterViewInit {
       let data1: any = 243.567
       await this._StoreService.setItem("testNumber",data1.toString());
       result = await this._StoreService.getItem("testNumber");
-      let ret3: boolean = false;
+      console.log(`result testNumber result ${result}`)
       if (result != data1.toString()){
         return Promise.reject(new Error("testNumber failed"));
       }
       // getting a value from a non existing key
       result = await this._StoreService.getItem("foo");
+      console.log(`getItem foo result.length ${result.length}`)
       if (result.length > 0) {
         return Promise.reject(new Error("test non existing key failed"));
       }
@@ -135,6 +136,10 @@ export class TeststoreComponent implements AfterViewInit {
       result = await this._StoreService.getAllKeysValues();
       if(result.length != 0) {
         return Promise.reject(new Error("getAllKeysValues failed after clear"));
+      }
+      // close the store
+      if(this.platform === "android" || this.platform === "ios") {
+        await this._StoreService.closeStore("storage");
       }
       console.log('in testFirstStore end ***** ')
       return Promise.resolve();

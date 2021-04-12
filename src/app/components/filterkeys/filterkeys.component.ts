@@ -119,6 +119,10 @@ export class FilterKeysComponent implements AfterViewInit {
           console.log(' key[' + i + "] = " + contValues[i] + "\n");
         }
       }
+      // close the store
+      if(this.platform === "android" || this.platform === "ios") {
+        await this._StoreService.closeStore("filterStore");
+      }
       console.log('in testFilterKeys end ***** ')
       return Promise.resolve();
     } catch (err) {
