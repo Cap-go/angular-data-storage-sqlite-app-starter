@@ -47,7 +47,7 @@ export class TeststoreComponent implements AfterViewInit {
         document.querySelector('.store-success1').classList.remove('display');
       } catch (err) {
         document.querySelector('.store-failure1').classList.remove('display');
-        await this._showAlert(err.message);
+        await this._showAlert(err);
       }
     } else {
       console.log("Service is not initialized");
@@ -61,7 +61,7 @@ export class TeststoreComponent implements AfterViewInit {
     console.log('in testFirstStore ***** ')
     try {
       await this._StoreService.openStore("");
-      await this._StoreService.clear();
+//      await this._StoreService.clear();
       // store data in the first store
       await this._StoreService.setItem("session","Session Opened");
       let result: any = await this._StoreService.getItem("session");

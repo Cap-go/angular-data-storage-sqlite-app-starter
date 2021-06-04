@@ -131,8 +131,8 @@ export class EncryptaStoreComponent implements AfterViewInit {
       result = await this._StoreService.getAllKeysValues();
       if(result.length != 3 ||
           result[0].key != "app" || result[0].value != "App Opened" ||
-          result[1].key != "user" || result[1].value != JSON.stringify(data) ||
-          result[2].key != "message" || result[2].value != "Welcome from Jeep") {
+          result[1].key != "message" || result[1].value != "Welcome from Jeep" ||         
+          result[2].key != "user" || result[2].value != JSON.stringify(data)) {
         return Promise.reject(new Error("getAllKeysValues failed"));
       }
       // close the store
@@ -156,8 +156,8 @@ export class EncryptaStoreComponent implements AfterViewInit {
       result = await this._StoreService.getAllKeysValues();
       if(result.length != 3 ||
           result[0].key != "app" || result[0].value != "App Opened" ||
-          result[1].key != "user" || result[1].value != JSON.stringify(data) ||
-          result[2].key != "message" || result[2].value != "Welcome from Jeep") {
+          result[1].key != "message" || result[1].value != "Welcome from Jeep" ||
+          result[2].key != "user" || result[2].value != JSON.stringify(data)) {
         return Promise.reject(new Error("getAllKeysValues failed"));
       }
       // close the store

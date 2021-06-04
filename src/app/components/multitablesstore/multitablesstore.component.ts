@@ -92,26 +92,6 @@ export class MultitablesstoreComponent implements AfterViewInit {
       if (result != JSON.stringify(data1)){
         return Promise.reject(new Error("key2 failed"));
       }
-
-      // test isTable
-      result = await this._StoreService.isTable("saveData");
-      console.log("isTable saveData " + result)
-      if(!result) {
-        return Promise.reject(new Error("isTable saveData failed"));
-      }
-      result = await this._StoreService.isTable("foo");
-      console.log("isTable foo " + result)
-      if(result) {
-        return Promise.reject(new Error("isTable foo failed"));
-      }
-      // test getAllTables
-      result = await this._StoreService.getAllTables();
-      console.log("Get tables result: " + result);
-  
-      if(result.length != 2 || !result.includes("saveData")
-          || !result.includes("otherData")) {
-        return Promise.reject(new Error("getAllTables 1 failed"));
-      }
       // store new data in "saveData" table
       await this._StoreService.setTable("saveData");
       await this._StoreService.setItem("message","Welcome from Jeep");
@@ -121,26 +101,48 @@ export class MultitablesstoreComponent implements AfterViewInit {
       }
       // test getAllKeysValues
       result = await this._StoreService.getAllKeysValues();
+      console.log(`getAllKeysValues result: ${JSON.stringify(result)}`)
       if(result.length != 3 ||
           result[0].key != "app" || result[0].value != "App Opened" ||
-          result[1].key != "user" || result[1].value != JSON.stringify(data) ||
-          result[2].key != "message" || result[2].value != "Welcome from Jeep") {
+          result[1].key != "message" || result[1].value != "Welcome from Jeep" ||
+          result[2].key != "user" || result[2].value != JSON.stringify(data)) {
         return Promise.reject(new Error("getAllKeysValues failed"));
       }
-      // test deleteTable
-      await this._StoreService.deleteTable("otherData");
-      // test getAllTables
-      result = await this._StoreService.getAllTables();
-      console.log("Get tables result: " + result);
-  
-      if(result.length != 1 || !result.includes("saveData")) {
-        return Promise.reject(new Error("getAllTables 2 failed"));
-      }
 
-      if(this.platform === "android" || this.platform === "ios") {
-      // test if "myStore" is opened
-        result = await this._StoreService.isStoreOpen("myStore");
-        if(result) await this._StoreService.closeStore("myStore");
+      // test isTable
+      if(this.platform !== "web") {
+        result = await this._StoreService.isTable("saveData");
+        console.log("isTable saveData " + result)
+        if(!result) {
+          return Promise.reject(new Error("isTable saveData failed"));
+        }
+        result = await this._StoreService.isTable("foo");
+        console.log("isTable foo " + result)
+        if(result) {
+          return Promise.reject(new Error("isTable foo failed"));
+        }
+
+        // test getAllTables
+        result = await this._StoreService.getAllTables();
+        console.log("Get tables result: " + result);
+    
+        if(result.length != 2 || !result.includes("saveData")
+            || !result.includes("otherData")) {
+          return Promise.reject(new Error("getAllTables 1 failed"));
+        }
+        // test deleteTable
+        await this._StoreService.deleteTable("otherData");
+        // test getAllTables
+        result = await this._StoreService.getAllTables();
+        console.log("Get tables result: " + result);
+    
+        if(result.length != 1 || !result.includes("saveData")) {
+          return Promise.reject(new Error("getAllTables 2 failed"));
+        }
+
+        // test if "myStore" is opened
+          result = await this._StoreService.isStoreOpen("myStore");
+          if(result) await this._StoreService.closeStore("myStore");
       }
       console.log('in testMultiTablesStore end ***** ')
       return Promise.resolve();

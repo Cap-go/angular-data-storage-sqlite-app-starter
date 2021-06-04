@@ -10,6 +10,6 @@
   <app-teststore></app-teststore>
   <app-filterkeys></app-filterkeys>
   <app-multitables-store></app-multitables-store>
-  <app-encryptastore></app-encryptastore>
-  <app-newencryptedstore></app-newencryptedstore>
+  <app-encryptastore *ngIf="native"></app-encryptastore>
+  <app-newencryptedstore *ngIf="native"></app-newencryptedstore>
 </ion-content>

@@ -38,7 +38,8 @@ git remote rm origin
  - then install it
 
 ```bash
-npm install
+npm install --save capacitor-data-storage-sqlite@next
+npm install --save localforage
 ```
 
  - then go to the building process

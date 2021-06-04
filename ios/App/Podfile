@@ -10,6 +10,7 @@ def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorDialog', :path => '../../node_modules/@capacitor/dialog'
+  pod 'CapacitorToast', :path => '../../node_modules/@capacitor/toast'
   pod 'CapacitorDataStorageSqlite', :path => '../../node_modules/capacitor-data-storage-sqlite'
 end
 
