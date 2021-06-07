@@ -141,8 +141,20 @@ export class MultitablesstoreComponent implements AfterViewInit {
         }
 
         // test if "myStore" is opened
-          result = await this._StoreService.isStoreOpen("myStore");
-          if(result) await this._StoreService.closeStore("myStore");
+        result = await this._StoreService.isStoreOpen("myStore");
+        if(result) await this._StoreService.closeStore("myStore");
+        // check if "myStore" exists
+        result = await this._StoreService.isStoreExists("myStore");
+        if(!result.result) {
+          return Promise.reject(new Error("isStoreExists 1 failed"));
+        }
+        // delete the Store 
+        await this._StoreService.deleteStore("myStore");      
+        // check if "myStore" exists
+        result = await this._StoreService.isStoreExists("myStore");
+        if(result.result) {
+          return Promise.reject(new Error("isStoreExists 2 failed"));
+        }
       }
       console.log('in testMultiTablesStore end ***** ')
       return Promise.resolve();

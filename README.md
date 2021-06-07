@@ -3,9 +3,7 @@
 <h3 align="center">Ionic/Angular Data Storage SQLite App Starter</h3>
 <p align="center"><strong><code>-angular-data-storage-sqlite-app-starter</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3 🚧</strong></p><br>
-<p align="center">
-  iOS for testing only</p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3</strong></p><br>
 <p align="center">Ionic/Angular application demonstrating the use of the</p>
 <p align="center"><strong><code>capacitor-data-storage-sqlite</code></strong></p>
 <br>
@@ -38,7 +36,7 @@ git remote rm origin
  - then install it
 
 ```bash
-npm install --save capacitor-data-storage-sqlite@next
+npm install --save capacitor-data-storage-sqlite
 npm install --save localforage
 ```
 
@@ -47,9 +45,11 @@ npm install --save localforage
 ```bash
 npm run build
 npx cap update
+npx cap update @capacitor-community/electron@next
 npm run build
 npx cap copy
 npx cap copy web
+npx cap copy @capacitor-community/electron
 ```
 
 the capacitor config parameters are:
@@ -85,7 +85,7 @@ Once Android Studio launches, you can build your app through the standard Androi
 #### Electron
 
 ```bash
-npx cap open electron
+npx cap open @capacitor-community/electron
 ```
 
 #### Resulting Output
@@ -118,12 +118,11 @@ In Android Studio, before building your app,
 
 A Angular Service has been defined as a wrapper to the ```capacitor-data-storage-sqlite``` plugin.
 
-```tsx
+```ts
 import { Injectable } from '@angular/core';
 
-import { Plugins } from '@capacitor/core';
-import * as CDSSPlugin from 'capacitor-data-storage-sqlite';
-const { CapacitorDataStorageSqlite, Device } = Plugins;
+import { Capacitor } from '@capacitor/core';
+import { CapacitorDataStorageSqlite,} from 'capacitor-data-storage-sqlite';
 
 @Injectable({
   providedIn: 'root'
@@ -138,46 +137,119 @@ export class StoreService {
    * Plugin Initialization
    */
   async init(): Promise<void> {
-    const info = await Device.getInfo();
-    this.platform = info.platform;
-    if (this.platform === "ios" || this.platform === "android") {
-      this.store = CapacitorDataStorageSqlite;
-    } else if(this.platform === "electron") {
-      this.store = CDSSPlugin.CapacitorDataStorageSqliteElectron;
-    } else {
-      this.store = CDSSPlugin.CapacitorDataStorageSqlite;
-    }
+    this.platform = Capacitor.getPlatform();
+    this.store = CapacitorDataStorageSqlite;
     this.isService = true;
+    console.log('in init ',this.platform,this.isService)
   }
   /**
-   * Open a Database
+   * Echo a value
+   * @param value 
+   */
+  async echo(value: string): Promise<any> {
+    if(this.isService && this.store != null) {
+        try {
+            return await this.store.echo(value);
+        } catch (err) {
+            console.log(`Error ${err}`)
+            return Promise.reject(new Error(err));
+        }
+    } else {
+        return Promise.reject(new Error("openStore: Store not opened"));
+    }
+  }
+
+  /**
+   * Open a Store
    * @param _dbName string optional
    * @param _table string optional
    * @param _encrypted boolean optional 
    * @param _mode string optional
    */  
-  async openStore(_dbName?:string,_table?:string,_encrypted?:boolean,_mode?:string): Promise<boolean> {
-    if(this.isService) {
+  async openStore(_dbName?:string,_table?:string,_encrypted?:boolean,_mode?:string): Promise<void> {
+    if(this.isService && this.store != null) {
       const database: string = _dbName ? _dbName : "storage";
       const table: string = _table ? _table : "storage_table";
       const encrypted:boolean = _encrypted ? _encrypted : false;
       const mode: string = _mode ? _mode : "no-encryption";
-      const {result} = await this.store.openStore({database,table,encrypted,mode});
-      return result;
+      try {
+        console.log("in openStore Service ")
+        console.log(`database ${database}`)
+        console.log(`table ${table}`)
+        await this.store.openStore({database,table,encrypted,mode});
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }      
     } else {
-      return Promise.resolve(false);
+      return Promise.reject(new Error("openStore: Store not opened"));
+    }
+  }
+  /**
+   * Close a store
+   * @param dbName 
+   * @returns 
+   */
+  async closeStore(dbName: String): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        await this.store.closeStore({database:dbName});
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }      
+    } else {
+      return Promise.reject(new Error("close: Store not opened"));
+    }
+  }
+  /**
+   * Check if a store is opened
+   * @param dbName 
+   * @returns 
+   */
+  async isStoreOpen(dbName: String): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        const ret = await this.store.isStoreOpen({database:dbName});
+        return Promise.resolve(ret);
+      } catch (err) {
+        return Promise.reject(err);
+      }      
+    } else {
+      return Promise.reject(new Error("isStoreOpen: Store not opened"));
+    }
+  }
+  /**
+   * Check if a store already exists
+   * @param dbName
+   * @returns 
+   */
+  async isStoreExists(dbName: String): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        const ret = await this.store.isStoreExists({database:dbName});
+        return Promise.resolve(ret);
+      } catch (err) {
+        return Promise.reject(err);
+      }      
+    } else {
+      return Promise.reject(new Error("isStoreExists: Store not opened"));
     }
   }
   /**
    * Create/Set a Table
    * @param table string
    */  
-  async setTable(table:string): Promise<any> {
-    if(this.isService) {
-      const {result,message} = await this.store.setTable({table});
-      return Promise.resolve([result,message]);
+  async setTable(table:string): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        await this.store.setTable({table});
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }      
     } else {
-      return Promise.resolve({result:false, message:"Service is not initialized"});
+      return Promise.reject(new Error("setTable: Store not opened"));
     }
   }
   /**
@@ -186,8 +258,19 @@ export class StoreService {
    * @param value string
    */
   async setItem(key:string,value:string): Promise<void> {
-    if(this.isService && key.length > 0) {
-      await this.store.set({ key, value });
+    if(this.isService && this.store != null) {
+      if(key.length > 0) {
+        try {
+          await this.store.set({ key, value });
+          return Promise.resolve();
+        } catch (err) {
+          return Promise.reject(err);
+        }      
+      } else {
+        return Promise.reject(new Error("setItem: Must give a key"));
+      }
+    } else {
+      return Promise.reject(new Error("setItem: Store not opened"));
     }
   }
   /**
@@ -195,77 +278,182 @@ export class StoreService {
    * @param key string 
    */
   async getItem(key:string): Promise<string> {
-    if(this.isService && key.length > 0) {
-      const {value} = await this.store.get({ key });
-      console.log("in getItem value ",value)
-      return value;
+    if(this.isService && this.store != null) {
+      if(key.length > 0) {
+        try {
+          const {value} = await this.store.get({ key });
+          console.log("in getItem value ",value)
+          return Promise.resolve(value);
+        } catch (err) {
+          console.log(`$$$$$ in getItem key: ${key} err: ${JSON.stringify(err)}`)
+          return Promise.reject(err);
+        }      
+      } else {
+        return Promise.reject(new Error("getItem: Must give a key"));
+      }
     } else {
-      return null;
+      return Promise.reject(new Error("getItem: Store not opened"));
     }
 
   }
   async isKey(key:string): Promise<boolean> {
-    if(this.isService && key.length > 0) {
-      const {result} = await this.store.iskey({ key });
-      return result;
+    if(this.isService && this.store != null) {
+      if(key.length > 0) {
+        try {
+          const {result} = await this.store.iskey({ key });
+          return Promise.resolve(result);
+        } catch (err) {
+          return Promise.reject(err);
+        }
+      } else {
+        return Promise.reject(new Error("isKey: Must give a key"));
+      }
     } else {
-      return null;
+      return Promise.reject(new Error("isKey: Store not opened"));
     }
 
   }
+
   async getAllKeys(): Promise<Array<string>> {
-    if(this.isService ) {
-      const {keys} = await this.store.keys();
-      return keys;
+    if(this.isService && this.store != null) {
+      try {
+        const {keys} = await this.store.keys();
+        return Promise.resolve(keys); 
+      } catch (err) {
+        return Promise.reject(err);
+      }
     } else {
-      return null;
+      return Promise.reject(new Error("getAllKeys: Store not opened"));
     }
   }
   async getAllValues(): Promise<Array<string>> {
-    if(this.isService ) {
-      const {values} = await this.store.values();
-      return values;
+    if(this.isService && this.store != null) {
+      try {
+        const {values} = await this.store.values();
+        return Promise.resolve(values);
+      } catch (err) {
+        return Promise.reject(err);
+      }
     } else {
-      return null;
+      return Promise.reject(new Error("getAllValues: Store not opened"));
+    }
+  }
+  async getFilterValues(filter:string): Promise<Array<string>> {
+    if(this.isService && this.store != null) {
+      try {
+        const {values} = await this.store.filtervalues({ filter });
+        return Promise.resolve(values);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    } else {
+      return Promise.reject(new Error("getFilterValues: Store not opened"));
     }
   }
   async getAllKeysValues(): Promise<Array<any>> {
-    if(this.isService ) {
-      const {keysvalues} = await this.store.keysvalues();
-      return keysvalues;
+    if(this.isService && this.store != null) {
+      try {
+        const {keysvalues} = await this.store.keysvalues();
+        return Promise.resolve(keysvalues);
+      } catch (err) {
+        return Promise.reject(err);
+      }
     } else {
-      return null;
+      return Promise.reject(new Error("getAllKeysValues: Store not opened"));
     }
   }
 
-  async removeItem(key:string): Promise<boolean> {
-    if(this.isService && key.length > 0) {
-      const {result} = await this.store.remove({ key });
-      return result;
+  async removeItem(key:string): Promise<void> {
+    if(this.isService && this.store != null) {
+      if(key.length > 0) {
+        try {
+          await this.store.remove({ key });
+          return Promise.resolve();
+        } catch (err) {
+          return Promise.reject(err);
+        }
+      } else {
+        return Promise.reject(new Error("removeItem: Must give a key"));
+      }
     } else {
-      return null;
+      return Promise.reject(new Error("removeItem: Store not opened"));
     }
   }
-  async clear(): Promise<boolean> {
-    if(this.isService ) {
-      const {result} = await this.store.clear();
-      return result;
+
+  async clear(): Promise<void> {
+    if(this.isService && this.store != null) {
+      try {
+        await this.store.clear();
+        return Promise.resolve();
+      } catch (err) {
+          return Promise.reject(err.message);
+        } 
     } else {
-      return null;
+      return Promise.reject(new Error("clear: Store not opened"));
     }
   }
-  async deleteStore(_dbName?:string): Promise<boolean> {
+
+  async deleteStore(_dbName?:string): Promise<void> {
     const database: string = _dbName ? _dbName : "storage";
     await this.init();
-    if(this.isService ) {
-      const {result} = await this.store.deleteStore({database});
-      return result;
+    if(this.isService && this.store != null) {
+      try {
+        await this.store.deleteStore({database});
+        return Promise.resolve();
+      } catch (err) {
+          return Promise.reject(err.message);
+      } 
+    } else {
+      return Promise.reject(new Error("deleteStore: Store not opened"));
     }
-    return;
+  }
+  async isTable(table:string): Promise<boolean> {
+    if(this.isService && this.store != null) {
+      if(table.length > 0) {
+        try {
+          const {result} = await this.store.isTable({ table });
+          return Promise.resolve(result);
+        } catch (err) {
+          return Promise.reject(err);
+        }
+      } else {
+        return Promise.reject(new Error("isTable: Must give a table"));
+      }
+    } else {
+      return Promise.reject(new Error("isTable: Store not opened"));
+    }
+  }
+  async getAllTables(): Promise<Array<string>> {
+    if(this.isService && this.store != null) {
+      try {
+        const {tables} = await this.store.tables();
+        return Promise.resolve(tables); 
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    } else {
+      return Promise.reject(new Error("getAllTables: Store not opened"));
+    }
+  }
+  async deleteTable(table?:string): Promise<void> {
+    if(this.isService && this.store != null) {
+      if(table.length > 0) {
+        try {
+          await this.store.deleteTable({table});
+          return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
+        } 
+      } else {
+        return Promise.reject(new Error("deleteTable: Must give a table"));
+      }
+    } else {
+      return Promise.reject(new Error("deleteTable: Store not opened"));
+    }
   }
 }
 
-```
+````
 
 ## Starting an App from Scratch
 
@@ -290,7 +478,8 @@ Here we choose for the example [myStorageApp] [com.example.app]
 ### Install capacitor-data-storage-sqlite plugin
 
 ```bash
-npm install --save capacitor-data-storage-sqlite@latest
+npm install --save capacitor-data-storage-sqlite
+npm install --save @capacitor-community/electron@next
 ```
 
 ### Add an Angular Service
@@ -365,7 +554,7 @@ npm run build
 ```bash
 npx cap add ios
 npx cap add android
-npx cap add electron
+npx cap add @capacitor-community/electron
 ```
 
 ### Building and Syncing your App with Capacitor
@@ -373,7 +562,7 @@ npx cap add electron
 ```bash
 npm run build
 npx cap copy
-npx cap copy web
+npx cap copy @capacitor-community/electron
 ```
 
 ### Open IDE to Build, Run and Deploy
@@ -409,12 +598,6 @@ add(CapacitorDataStorageSqlite.class);
 
 #### Electron
 
-In your application folder add the Electron platform
-
-```bash
-npx cap add electron
-```
-
 In the Electron folder of your application
 
 ```bash
@@ -423,50 +606,28 @@ npm install --save-dev @types/sqlite3
 npm install --save-dev electron-rebuild
 ```
 
-Modify the Electron package.json file by adding a script "postinstall"
+Modify the Electron package.json file by adding a script `"rebuild-deps"` if it is not existing
 
 ```json
   "scripts": {
-    "electron:start": "electron ./",
-    "postinstall": "electron-rebuild -f -w sqlite3"
+    "rebuild-deps": "electron-rebuild"
   },
 ```
 
 Execute the postinstall script
 
 ```bash
-npm run postinstall
+npm run rebuild-deps
 ```
 Go back in the main folder of your application
-Add a script in the index.html file of your application in the body tag
-
-```html
-<body>
-  <app-root></app-root>
-  <script>
-    try {
-      if (process && typeof (process.versions.electron) === 'string' && process.versions.hasOwnProperty('electron')) {
-        const sqlite3 = require('sqlite3');
-        const fs = require('fs');
-        const path = require('path');
-        window.sqlite3 = sqlite3;
-        window.fs = fs;
-        window.path = path;
-      }
-    }
-    catch {
-      console.log("process doesn't exists");
-    }
-  </script>
-</body>
-```
 and then build the application
 
 ```bash
  npx cap update
+ npx cap update @capacitor-community/electron
  npm run build
  npx cap copy
- npx cap open electron
+ npx cap open @capacitor-community/electron
 ```
 
 The datastores created are under **YourApplication/Electron/DataStorage**
@@ -479,13 +640,14 @@ Follow this process:
 ```bash
 npm install --save capacitor-data-storage-sqlite@latest
 npx cap update
+npx cap update @capacitor-community/electron
 npm run build
 npx cap copy
-npx cap copy web
+npx cap copy @capacitor-community/electron
 npx cap open ios
 npx cap open android
-npx cap open electron
-npx cap serve
+npx cap open @capacitor-community/electron
+ionic serve
 ```
 
 ### Test Capacitor-Data-Storage-SQLite access

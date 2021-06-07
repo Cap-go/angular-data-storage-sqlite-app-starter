@@ -56,12 +56,14 @@ export class TeststoreComponent implements AfterViewInit {
     }
   }
   async testFirstStore(): Promise<void> {
+    const echo = await this._StoreService.echo("Hello from Jeep");
+    console.log(`echo: ${echo.value}`);
     //populate some data
     //string
     console.log('in testFirstStore ***** ')
     try {
       await this._StoreService.openStore("");
-//      await this._StoreService.clear();
+      await this._StoreService.clear();
       // store data in the first store
       await this._StoreService.setItem("session","Session Opened");
       let result: any = await this._StoreService.getItem("session");
@@ -102,7 +104,7 @@ export class TeststoreComponent implements AfterViewInit {
       }
       // test getAllKeys
       result = await this._StoreService.getAllKeys();
-      console.log("Get keys result: " + result);
+      console.log(`Get keys result: ${result}`);
   
       if(result.length != 3 || result[0] != "session"
           || result[1] != "testJson" || result[2] != "testNumber") {

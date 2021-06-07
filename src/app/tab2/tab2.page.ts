@@ -13,7 +13,7 @@ export class Tab2Page {
   }
   async ionViewWillEnter() {
     const platform = Capacitor.getPlatform();
-    if (platform !== "web") {
+    if (platform === "ios" || platform === "android") {
       this.native = true;
     }
   }

@@ -22,6 +22,23 @@ export class StoreService {
     console.log('in init ',this.platform,this.isService)
   }
   /**
+   * Echo a value
+   * @param value 
+   */
+  async echo(value: string): Promise<any> {
+    if(this.isService && this.store != null) {
+        try {
+            return await this.store.echo(value);
+        } catch (err) {
+            console.log(`Error ${err}`)
+            return Promise.reject(new Error(err));
+        }
+    } else {
+        return Promise.reject(new Error("openStore: Store not opened"));
+    }
+  }
+
+  /**
    * Open a Store
    * @param _dbName string optional
    * @param _table string optional
