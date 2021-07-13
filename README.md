@@ -45,7 +45,7 @@ npm install --save localforage
 ```bash
 npm run build
 npx cap update
-npx cap update @capacitor-community/electron@next
+npx cap update @capacitor-community/electron
 npm run build
 npx cap copy
 npx cap copy web

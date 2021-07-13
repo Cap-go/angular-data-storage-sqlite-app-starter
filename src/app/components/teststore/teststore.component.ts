@@ -65,9 +65,9 @@ export class TeststoreComponent implements AfterViewInit {
       await this._StoreService.openStore("");
       await this._StoreService.clear();
       // store data in the first store
-      await this._StoreService.setItem("session","Session Opened");
+      await this._StoreService.setItem("session","Session 'Opened");
       let result: any = await this._StoreService.getItem("session");
-      if (result != "Session Opened") {
+      if (result != "Session 'Opened") {
         return Promise.reject(new Error("session failed"));
       }
       // json
@@ -110,17 +110,25 @@ export class TeststoreComponent implements AfterViewInit {
           || result[1] != "testJson" || result[2] != "testNumber") {
         return Promise.reject(new Error("getAllKeys failed"));
       }
+      // Update session
+      // store data in the first store
+      await this._StoreService.setItem("session","Session 'Opened' updated");
+      result = await this._StoreService.getItem("session");
+      if (result != "Session 'Opened' updated") {
+        return Promise.reject(new Error("session failed"));
+      }
+      
       // test getAllValues
       result = await this._StoreService.getAllValues();
       console.log("Get values : " + result);
-      if(result.length != 3 || result[0] != "Session Opened"
+      if(result.length != 3 || result[0] != "Session 'Opened' updated"
           || result[1] != JSON.stringify(data) || result[2] != data1.toString()) {
         return Promise.reject(new Error("getAllValues failed"));
       }
       // test getAllKeysValues
       result = await this._StoreService.getAllKeysValues();
       if(result.length != 3 ||
-          result[0].key != "session" || result[0].value != "Session Opened" ||
+          result[0].key != "session" || result[0].value != "Session 'Opened' updated" ||
           result[1].key != "testJson" || result[1].value != JSON.stringify(data) ||
           result[2].key != "testNumber" || result[2].value != data1.toString()) {
         return Promise.reject(new Error("getAllKeysValues failed"));
@@ -129,7 +137,7 @@ export class TeststoreComponent implements AfterViewInit {
       await this._StoreService.removeItem("testJson");
       result = await this._StoreService.getAllKeysValues();
       if(result.length != 2 || 
-          result[0].key != "session" || result[0].value != "Session Opened" ||
+          result[0].key != "session" || result[0].value != "Session 'Opened' updated" ||
           result[1].key != "testNumber" || result[1].value != data1.toString()) {
         return Promise.reject(new Error("getAllKeysValues failed after removeItem"));
       }

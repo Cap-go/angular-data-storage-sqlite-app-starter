@@ -86,7 +86,7 @@ export class StoreService {
    * @param dbName 
    * @returns 
    */
-  async isStoreOpen(dbName: String): Promise<void> {
+  async isStoreOpen(dbName: String): Promise<boolean> {
     if(this.isService && this.store != null) {
       try {
         const ret = await this.store.isStoreOpen({database:dbName});
@@ -103,7 +103,7 @@ export class StoreService {
    * @param dbName
    * @returns 
    */
-  async isStoreExists(dbName: String): Promise<void> {
+  async isStoreExists(dbName: String): Promise<boolean> {
     if(this.isService && this.store != null) {
       try {
         const ret = await this.store.isStoreExists({database:dbName});
