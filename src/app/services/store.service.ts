@@ -28,7 +28,7 @@ export class StoreService {
   async echo(value: string): Promise<any> {
     if(this.isService && this.store != null) {
         try {
-            return await this.store.echo(value);
+            return await this.store.echo({value});
         } catch (err) {
             console.log(`Error ${err}`)
             return Promise.reject(new Error(err));
