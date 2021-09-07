@@ -47,7 +47,7 @@ export class TeststoreComponent implements AfterViewInit {
         document.querySelector('.store-success1').classList.remove('display');
       } catch (err) {
         document.querySelector('.store-failure1').classList.remove('display');
-        await this._showAlert(err);
+        await this._showAlert(err.message);
       }
     } else {
       console.log("Service is not initialized");
@@ -154,7 +154,7 @@ export class TeststoreComponent implements AfterViewInit {
       console.log('in testFirstStore end ***** ')
       return Promise.resolve();
     } catch (err) {
-      return Promise.reject(err);
+      return Promise.reject(new Error(err.message));
     }
   }
   async resetStorageDisplay(): Promise<void> {

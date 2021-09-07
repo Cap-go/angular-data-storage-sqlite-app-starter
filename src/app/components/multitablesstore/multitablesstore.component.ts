@@ -159,7 +159,7 @@ export class MultitablesstoreComponent implements AfterViewInit {
       console.log('in testMultiTablesStore end ***** ')
       return Promise.resolve();
     } catch (err) {
-      return Promise.reject(err);
+      return Promise.reject(new Error(err.message));
     }
   }
   async resetStorageDisplay(): Promise<void> {

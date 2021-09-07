@@ -126,7 +126,7 @@ export class FilterKeysComponent implements AfterViewInit {
       console.log('in testFilterKeys end ***** ')
       return Promise.resolve();
     } catch (err) {
-      return Promise.reject(err);
+      return Promise.reject(new Error(err.message));
     }
     
   }

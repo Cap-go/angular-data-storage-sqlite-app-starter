@@ -9,6 +9,7 @@ import { FilterKeysComponentModule } from '../components/filterkeys/filterkeys.m
 import { MultitablesstoreComponentModule } from '../components/multitablesstore/multitablesstore.module';
 import { EncryptaStoreComponentModule } from '../components/encryptastore/encryptastore.module';
 import { NewEncryptedStoreComponentModule } from '../components/newencryptedstore/newencryptedstore.module';
+import { TestjsonComponentModule } from '../components/testjson/testjson.module';
 
 @NgModule({
   imports: [
@@ -20,6 +21,7 @@ import { NewEncryptedStoreComponentModule } from '../components/newencryptedstor
     MultitablesstoreComponentModule,
     EncryptaStoreComponentModule,
     NewEncryptedStoreComponentModule,
+    TestjsonComponentModule,
     RouterModule.forChild([{ path: '', component: Tab2Page }])
   ],
   declarations: [Tab2Page]

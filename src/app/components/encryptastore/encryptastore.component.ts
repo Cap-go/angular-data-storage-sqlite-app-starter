@@ -168,7 +168,7 @@ export class EncryptaStoreComponent implements AfterViewInit {
       console.log('in testEncryptaStore end ***** ')
       return Promise.resolve();
     } catch (err) {
-      return Promise.reject(err);
+      return Promise.reject(new Error(err.message));
     }
   }
   async resetStorageDisplay(): Promise<void> {

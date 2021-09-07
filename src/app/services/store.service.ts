@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Capacitor } from '@capacitor/core';
-import { CapacitorDataStorageSqlite,} from 'capacitor-data-storage-sqlite';
+import { CapacitorDataStorageSqlite, capDataStorageResult, capDataStorageChanges, capStoreJson} from 'capacitor-data-storage-sqlite';
 
 @Injectable({
   providedIn: 'root'
@@ -19,19 +19,18 @@ export class StoreService {
     this.platform = Capacitor.getPlatform();
     this.store = CapacitorDataStorageSqlite;
     this.isService = true;
-    console.log('in init ',this.platform,this.isService)
   }
   /**
    * Echo a value
    * @param value 
    */
-  async echo(value: string): Promise<any> {
+   async echo(value: string): Promise<any> {
     if(this.isService && this.store != null) {
         try {
             return await this.store.echo({value});
         } catch (err) {
             console.log(`Error ${err}`)
-            return Promise.reject(new Error(err));
+            return Promise.reject(new Error(err.message));
         }
     } else {
         return Promise.reject(new Error("openStore: Store not opened"));
@@ -58,7 +57,7 @@ export class StoreService {
         await this.store.openStore({database,table,encrypted,mode});
         return Promise.resolve();
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }      
     } else {
       return Promise.reject(new Error("openStore: Store not opened"));
@@ -75,7 +74,7 @@ export class StoreService {
         await this.store.closeStore({database:dbName});
         return Promise.resolve();
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }      
     } else {
       return Promise.reject(new Error("close: Store not opened"));
@@ -92,7 +91,7 @@ export class StoreService {
         const ret = await this.store.isStoreOpen({database:dbName});
         return Promise.resolve(ret);
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }      
     } else {
       return Promise.reject(new Error("isStoreOpen: Store not opened"));
@@ -109,7 +108,7 @@ export class StoreService {
         const ret = await this.store.isStoreExists({database:dbName});
         return Promise.resolve(ret);
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }      
     } else {
       return Promise.reject(new Error("isStoreExists: Store not opened"));
@@ -125,7 +124,7 @@ export class StoreService {
         await this.store.setTable({table});
         return Promise.resolve();
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }      
     } else {
       return Promise.reject(new Error("setTable: Store not opened"));
@@ -143,7 +142,7 @@ export class StoreService {
           await this.store.set({ key, value });
           return Promise.resolve();
         } catch (err) {
-          return Promise.reject(err);
+          return Promise.reject(new Error(err.message));
         }      
       } else {
         return Promise.reject(new Error("setItem: Must give a key"));
@@ -165,7 +164,7 @@ export class StoreService {
           return Promise.resolve(value);
         } catch (err) {
           console.log(`$$$$$ in getItem key: ${key} err: ${JSON.stringify(err)}`)
-          return Promise.reject(err);
+          return Promise.reject(new Error(err.message));
         }      
       } else {
         return Promise.reject(new Error("getItem: Must give a key"));
@@ -182,7 +181,7 @@ export class StoreService {
           const {result} = await this.store.iskey({ key });
           return Promise.resolve(result);
         } catch (err) {
-          return Promise.reject(err);
+          return Promise.reject(new Error(err.message));
         }
       } else {
         return Promise.reject(new Error("isKey: Must give a key"));
@@ -199,7 +198,7 @@ export class StoreService {
         const {keys} = await this.store.keys();
         return Promise.resolve(keys); 
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }
     } else {
       return Promise.reject(new Error("getAllKeys: Store not opened"));
@@ -211,7 +210,7 @@ export class StoreService {
         const {values} = await this.store.values();
         return Promise.resolve(values);
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }
     } else {
       return Promise.reject(new Error("getAllValues: Store not opened"));
@@ -223,7 +222,7 @@ export class StoreService {
         const {values} = await this.store.filtervalues({ filter });
         return Promise.resolve(values);
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }
     } else {
       return Promise.reject(new Error("getFilterValues: Store not opened"));
@@ -235,7 +234,7 @@ export class StoreService {
         const {keysvalues} = await this.store.keysvalues();
         return Promise.resolve(keysvalues);
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }
     } else {
       return Promise.reject(new Error("getAllKeysValues: Store not opened"));
@@ -249,7 +248,7 @@ export class StoreService {
           await this.store.remove({ key });
           return Promise.resolve();
         } catch (err) {
-          return Promise.reject(err);
+          return Promise.reject(new Error(err.message));
         }
       } else {
         return Promise.reject(new Error("removeItem: Must give a key"));
@@ -265,7 +264,7 @@ export class StoreService {
         await this.store.clear();
         return Promise.resolve();
       } catch (err) {
-          return Promise.reject(err.message);
+          return Promise.reject(new Error(err.message));
         } 
     } else {
       return Promise.reject(new Error("clear: Store not opened"));
@@ -280,7 +279,7 @@ export class StoreService {
         await this.store.deleteStore({database});
         return Promise.resolve();
       } catch (err) {
-          return Promise.reject(err.message);
+          return Promise.reject(new Error(err.message));
       } 
     } else {
       return Promise.reject(new Error("deleteStore: Store not opened"));
@@ -293,7 +292,7 @@ export class StoreService {
           const {result} = await this.store.isTable({ table });
           return Promise.resolve(result);
         } catch (err) {
-          return Promise.reject(err);
+          return Promise.reject(new Error(err.message));
         }
       } else {
         return Promise.reject(new Error("isTable: Must give a table"));
@@ -308,7 +307,7 @@ export class StoreService {
         const {tables} = await this.store.tables();
         return Promise.resolve(tables); 
       } catch (err) {
-        return Promise.reject(err);
+        return Promise.reject(new Error(err.message));
       }
     } else {
       return Promise.reject(new Error("getAllTables: Store not opened"));
@@ -321,7 +320,7 @@ export class StoreService {
           await this.store.deleteTable({table});
           return Promise.resolve();
         } catch (err) {
-            return Promise.reject(err);
+            return Promise.reject(new Error(err.message));
         } 
       } else {
         return Promise.reject(new Error("deleteTable: Must give a table"));
@@ -330,4 +329,53 @@ export class StoreService {
       return Promise.reject(new Error("deleteTable: Store not opened"));
     }
   }
+  /**
+   * Is Json Object Valid
+   * @param jsonstring Check the validity of a given Json Object
+   */
+
+  async isJsonValid(jsonstring:string): Promise<capDataStorageResult> {
+    if(this.isService && this.store != null) {
+      try {
+          return Promise.resolve(await this.store.isJsonValid({jsonstring}));
+      } catch (err) {
+          return Promise.reject(new Error(err.message));
+      }
+    } else {
+        return Promise.reject(new Error(`no store open`));
+    }
+
+  }
+  /**
+   * Import from a Json Object
+   * @param jsonstring 
+   */
+  async importFromJson(jsonstring:string): Promise<capDataStorageChanges> {
+    if(this.isService && this.store != null) {
+      try {
+            return Promise.resolve(await this.store.importFromJson({jsonstring}));
+        } catch (err) {
+            return Promise.reject(new Error(err.message));
+        }
+    } else {
+        return Promise.reject(new Error(`no store open`));
+    }
+                  
+  }
+  /**
+   * Export to a Json Object
+   */
+  async exportToJson(): Promise<capStoreJson> {
+    if(this.isService && this.store != null) {
+      try {
+            return Promise.resolve(await this.store.exportToJson());
+        } catch (err) {
+            return Promise.reject(new Error(err.message));
+        }
+    } else {
+        return Promise.reject(new Error(`no store open`));
+    }
+                  
+  }
+
 }
