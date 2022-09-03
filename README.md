@@ -3,12 +3,12 @@
 <h3 align="center">Ionic/Angular Data Storage SQLite App Starter</h3>
 <p align="center"><strong><code>-angular-data-storage-sqlite-app-starter</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3</strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 4</strong></p><br>
 <p align="center">Ionic/Angular application demonstrating the use of the</p>
 <p align="center"><strong><code>capacitor-data-storage-sqlite</code></strong></p>
 <br>
 <p align="center">
-  <img src="https://img.shields.io/maintenance/yes/2021?style=flat-square" />
+  <img src="https://img.shields.io/maintenance/yes/2022?style=flat-square" />
   <a href="https://github.com/jepiqueau/angular-data-storage-sqlite-app-starter"><img src="https://img.shields.io/github/license/jepiqueau/angular-data-storage-sqlite-app-starter?style=flat-square" /></a>
   <a href="https://github.com/jepiqueau/angular-data-storage-sqlite-app-starter"><img src="https://img.shields.io/github/package-json/v/jepiqueau/angular-data-storage-sqlite-app-starter?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
