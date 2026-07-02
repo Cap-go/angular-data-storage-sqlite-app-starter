@@ -114,6 +114,42 @@ In Android Studio, before building your app,
  - Go to the ```capacitor-data-storage-sqlite/java/com.jeep.plugin.capacitor/cdssUtils```folder,
  - Modify the ```secret``` and ```newsecret```strings in the Global.java file.
 
+### Standalone routing (`main.ts` / `app.routes.ts`)
+
+This starter uses Angular standalone bootstrapping. Define your top-level routes in `src/app/app.routes.ts`:
+
+```ts
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadChildren: () => import('./tabs/tabs.module').then((m) => m.TabsPageModule),
+  },
+];
+```
+
+Then import those routes in `src/main.ts` (path from `src/main.ts`: `./app/app.routes`):
+
+```ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
+import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
+
+import { AppComponent } from './app/app.component';
+import { routes } from './app/app.routes';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    provideIonicAngular(),
+    provideRouter(routes, withPreloading(PreloadAllModules)),
+  ],
+});
+```
+
+If your Ionic CLI project still generated `app-routing.module.ts`, you can import the same `routes` array from `./app.routes` instead of duplicating route definitions.
+
 ### Angular Service
 
 A Angular Service has been defined as a wrapper to the ```capacitor-data-storage-sqlite``` plugin.
